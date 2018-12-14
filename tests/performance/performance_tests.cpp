@@ -25,11 +25,11 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <graphene/chain/database.hpp>
+#include <muse/chain/database.hpp>
 
-#include <graphene/chain/account_object.hpp>
-#include <graphene/chain/asset_object.hpp>
-#include <graphene/chain/proposal_object.hpp>
+#include <muse/chain/account_object.hpp>
+#include <muse/chain/asset_object.hpp>
+#include <muse/chain/proposal_object.hpp>
 
 #include <graphene/db/simple_index.hpp>
 
@@ -39,7 +39,7 @@
 #include <cstdlib>
 #include <iostream>
 
-using namespace graphene::chain;
+using namespace muse::chain;
 
 BOOST_FIXTURE_TEST_SUITE( performance_tests, database_fixture )
 
@@ -80,15 +80,11 @@ BOOST_AUTO_TEST_CASE( one_hundred_k_benchmark )
 
    {
       account_create_operation aco;
-      aco.name = "a1";
-      aco.registrar = committee_account.id;
+      aco.new_account_name = "a1";
+      aco.creator = committee_account.id;
       aco.owner = authority( 1, public_key_type(nathan_pub), 1 );
       aco.active = authority( 1, public_key_type(nathan_pub), 1 );
-      aco.options.memo_key = nathan_pub;
-      aco.options.voting_account = GRAPHENE_PROXY_TO_SELF_ACCOUNT;
-      aco.options.num_committee = 0;
-      aco.options.num_witness = 0;
-      aco.fee = db.current_fee_schedule().calculate_fee( aco );
+      aco.memo_key = nathan_pub;
       trx.clear();
       test::set_expiration( db, trx );
       for( uint32_t i = 0; i < cycles; ++i )
@@ -118,10 +114,8 @@ BOOST_AUTO_TEST_CASE( one_hundred_k_benchmark )
       transfer_operation to1;
       to1.from = committee_account.id;
       to1.amount = asset( 1000000 );
-      to1.fee = asset( 10 );
       transfer_operation to2;
       to2.amount = asset( 100 );
-      to2.fee = asset( 10 );
       for( uint32_t i = 0; i < cycles; ++i )
       {
          to1.to = accounts[i];
